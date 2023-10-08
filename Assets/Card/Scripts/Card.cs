@@ -9,6 +9,8 @@ public class Card : MonoBehaviour
 
     SpriteRenderer myRenderer;
 
+    public Transform playerHandPos;
+
     bool mouseOver = false;
 
     void Start()
@@ -21,13 +23,15 @@ public class Card : MonoBehaviour
     {
         if (mouseOver)
         {
-            myRenderer.sprite = faceSprite;
+            
         }
     }
 
-    void OnMouseDown() // called when user has pressed the mouse button while over the Collider.
+    void OnMouseOver()
     {
         mouseOver = true;
     }
+
+    //Need to have a opponent deck
 
 }
