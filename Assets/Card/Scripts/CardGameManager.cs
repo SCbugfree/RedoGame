@@ -39,9 +39,13 @@ public class CardGameManager : MonoBehaviour
     Vector3 currentPlayerPos;
     Vector3 currentOppoPos;
 
+    SpriteRenderer inGameRenderer;
+
+
     void Start()
     {
         state = GameState.OPPO_DEAL;
+        inGameRenderer = GetComponent<SpriteRenderer>();
 
     }
 
@@ -108,16 +112,16 @@ public class CardGameManager : MonoBehaviour
         newPos.x = newPos.x + (2f * opponentHand.Count); //spacing between each card
 
         
-        while(nextCard.transform.position != newPos)
+        if(nextCard.transform.position != newPos)
         {
-            currentOppoPos = Vector3.MoveTowards(nextCard.transform.position, newPos, 0.10f);
+            currentOppoPos = Vector3.MoveTowards(nextCard.transform.position, newPos, 0.04f);
             nextCard.transform.position = currentOppoPos;   
         }
-        
-
-        opponentHand.Add(nextCard);
-
-        DeckManager.deck.Remove(nextCard);
+        else
+        {
+            opponentHand.Add(nextCard);
+            DeckManager.deck.Remove(nextCard);
+        }
     }
 
     void PlayerDealCard()
@@ -126,22 +130,31 @@ public class CardGameManager : MonoBehaviour
         newPos = playerPos.transform.position;
         newPos.x = newPos.x + (2f * playerHand.Count); //spacing between each card
 
-        
-        while(nextCard.transform.position != newPos)
+
+        if (nextCard.transform.position != newPos)
         {
-            currentPlayerPos = Vector3.MoveTowards(nextCard.transform.position, newPos, 0.10f);
+            currentPlayerPos = Vector3.MoveTowards(nextCard.transform.position, newPos, 0.04f);
             nextCard.transform.position = currentPlayerPos;
         }
-        
-
-        playerHand.Add(nextCard);
-
-        DeckManager.deck.Remove(nextCard);
+        else
+        {
+            playerHand.Add(nextCard);
+            DeckManager.deck.Remove(nextCard);
+        }
     }
 
     void OpponentTurn()
     {
-       
+       for(int i = 0; i < playerHandCount; i++)
+        {
+            nextCard = playerHand[i];
+
+            SpriteRenderer inGameRenderer = nextCard.GetComponent<SpriteRenderer>();
+
+            Card nextCardScript = nextCard.GetComponent<Card>();
+
+            inGameRenderer.sprite = nextCardScript.faceSprite; //Reveal player card faces
+        }
     }
 
     void PlayerTurn()
@@ -163,15 +176,4 @@ public class CardGameManager : MonoBehaviour
     {
 
     }
-
-    /*
-    void FixedUpdate()
-    {
-        GameObject nextCard2 = nextCard;
-        Vector3 newPos2 = newPos;
-        Vector3 currentPos;
-        currentPos = Vector3.Lerp(nextCard2.transform.position, newPos2, 0.2f);
-        nextCard2.transform.position = currentPos;
-    }
-    */
 }
