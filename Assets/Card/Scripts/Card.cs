@@ -42,38 +42,4 @@ public class Card : MonoBehaviour
         mouseDown = true;
     }
 
-    /*
-    void FixedUpdate()
-    {
-        if(GameObject.Find("Next Card"))
-        {
-            Debug.Log("Found");
-        }
-        GameObject cardRef = GameObject.Find("Game Manager");
-        CardGameManager cardRefScript = cardRef.GetComponent<CardGameManager>();
-
-        GameObject nextCardRef = GameObject.Find("nextCard");
-
-        Debug.Log(cardRefScript.opponentHandCount);
-
-        if (cardRefScript.opponentHand.Contains(nextCardRef))
-        {
-            cardRefScript.newPos = cardRefScript.opponentPos.transform.position;
-            Debug.Log("True");
-        }
-
-        if (cardRefScript.playerHand.Contains(nextCardRef))
-        {
-            cardRefScript.newPos = cardRefScript.playerPos.transform.position;
-            Debug.Log("True2");
-        }
-
-        Vector3 currentPos = Vector3.Lerp(nextCardRef.transform.position, cardRefScript.newPos, 0.10f);
-        nextCardRef.transform.position = currentPos;
-
-    }
-
-    //Need to have a opponent deck
-    */
-
 }

@@ -22,24 +22,35 @@ public class CardGameManager : MonoBehaviour
     public List<GameObject> playerHand = new List<GameObject>();//base class for all entities
     public List<GameObject> opponentHand = new List<GameObject>();
 
-    public int playerHandCount; //keep track of how many cards the player should have
+    public int playerHandCount; //keep track of how many cards the Player should have
     public Transform playerPos; //set the location of the cards
 
     public int opponentHandCount;
     public Transform opponentPos;
 
-    public bool isOpponent; //identify whether the card is in opponent's deck or in player's deck
+    public Transform oppoPlayedPos;
+    public Transform playerPlayedPos;
+    public Transform discardPos;
+
+    public bool isOpponent; //identify whether the card is in Opponent's deck or in Player's deck
     public bool isPlayer;
 
-    public GameObject nextCard;
+    public GameObject nextCard; //the next card dealt from deck
+    public GameObject oppoPlayed; //the card that Opponent plays
+    public GameObject playerPlayed; //the card that Player plays
 
     public Card cardRef;
-    public Vector3 newPos;
+    public Vector3 newPos = new Vector3(0,0,0); //initializing newPos
  
     Vector3 currentPlayerPos;
     Vector3 currentOppoPos;
 
     SpriteRenderer inGameRenderer;
+
+    int counter;
+    int oppoIndex = 0; //the index of the card played by the Opponent in the Oppoent's deck
+
+    bool randomPicked = false; //ensure Random selection only runs once
 
 
     void Start()
@@ -58,9 +69,11 @@ public class CardGameManager : MonoBehaviour
                 if(opponentHand.Count < opponentHandCount)
                 {
                     OppoDealCard();
+                    
                 }
                 else
                 {
+                    
                     state = GameState.PLAYER_DEAL;
                 }
 
@@ -81,8 +94,15 @@ public class CardGameManager : MonoBehaviour
 
             case GameState.OPPONENT_TURN:
 
-                OpponentTurn();
-
+                if (opponentHand.Count == opponentHandCount)
+                {
+                    OpponentTurn();
+                }
+                else
+                {
+                    state = GameState.PLAYER_TURN;
+                }
+            
                 break;
 
             case GameState.PLAYER_TURN:
@@ -107,15 +127,14 @@ public class CardGameManager : MonoBehaviour
     void OppoDealCard()
     {
         nextCard = DeckManager.deck[DeckManager.deck.Count - 1]; //a temporary storage of the next card dealt
-        //opponentHand.Add(nextCard);
         newPos = opponentPos.transform.position; //refer to the pre-determined opponent position
         newPos.x = newPos.x + (2f * opponentHand.Count); //spacing between each card
 
         
-        if(nextCard.transform.position != newPos)
+        if (nextCard.transform.position != newPos)
         {
-            currentOppoPos = Vector3.MoveTowards(nextCard.transform.position, newPos, 0.04f);
-            nextCard.transform.position = currentOppoPos;   
+            currentOppoPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.04f);
+            nextCard.transform.position = currentOppoPos;
         }
         else
         {
@@ -123,7 +142,7 @@ public class CardGameManager : MonoBehaviour
             DeckManager.deck.Remove(nextCard);
         }
     }
-
+    
     void PlayerDealCard()
     {
         nextCard = DeckManager.deck[DeckManager.deck.Count - 1];//a temporary storage of the next card dealt
@@ -133,7 +152,7 @@ public class CardGameManager : MonoBehaviour
 
         if (nextCard.transform.position != newPos)
         {
-            currentPlayerPos = Vector3.MoveTowards(nextCard.transform.position, newPos, 0.04f);
+            currentPlayerPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.04f);
             nextCard.transform.position = currentPlayerPos;
         }
         else
@@ -145,21 +164,54 @@ public class CardGameManager : MonoBehaviour
 
     void OpponentTurn()
     {
-       for(int i = 0; i < playerHandCount; i++)
+        if (counter < playerHandCount) //make sure not repeatingly revealing 3 cards of Player deck
         {
-            nextCard = playerHand[i];
 
-            SpriteRenderer inGameRenderer = nextCard.GetComponent<SpriteRenderer>();
+            for (int k = 0; k < playerHandCount; k++) //ensure every card in Player deck has been revealed
+            {
+                nextCard = playerHand[k];
 
-            Card nextCardScript = nextCard.GetComponent<Card>();
+                SpriteRenderer inGameRenderer = nextCard.GetComponent<SpriteRenderer>();
 
-            inGameRenderer.sprite = nextCardScript.faceSprite; //Reveal player card faces
+                Card nextCardScript = nextCard.GetComponent<Card>();
+
+                inGameRenderer.sprite = nextCardScript.faceSprite; //reveal player card faces
+
+                counter++;
+            }
+        }
+        else
+        {
+            if (!randomPicked) //if a random opponent card has not been picked 
+            {
+                oppoIndex = Random.Range(0, 3); //randomly play 1 of 3 opponent card from opponent deck
+
+                oppoPlayed = opponentHand[oppoIndex]; //stores the card that the opponent plays
+
+                newPos = oppoPlayedPos.transform.position; //get opponent target position
+
+                randomPicked = true;
+            }
+
+            else
+            {
+                if (oppoPlayed.transform.position != newPos)
+                {
+                    Vector3 oppoCurrentPos = Vector3.Lerp(oppoPlayed.transform.position, newPos, 0.04f);
+
+                    oppoPlayed.transform.position = oppoCurrentPos;
+                }
+                else
+                {
+                    opponentHand.Remove(oppoPlayed);
+                }
+            }
         }
     }
 
     void PlayerTurn()
     {
-
+        
     }
 
     void Evaluation()
@@ -176,4 +228,5 @@ public class CardGameManager : MonoBehaviour
     {
 
     }
+    
 }
