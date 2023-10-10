@@ -147,7 +147,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 392344139}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.67, y: 3.22, z: 0}
+  m_LocalPosition: {x: -2.19, y: 1.51, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -275,7 +275,9 @@ MonoBehaviour:
   opponentPos: {fileID: 392344140}
   isOpponent: 0
   isPlayer: 0
-  cardRef: {fileID: 0}
+  nextCard: {fileID: 0}
+  cardRef: {fileID: 78833591623606842, guid: 3d9d00b4d74abde4f98cc6f345914cce, type: 3}
+  newPos: {x: 0, y: 0, z: 0}
 --- !u!4 &975409548
 Transform:
   m_ObjectHideFlags: 0
@@ -315,7 +317,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1647524970}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.67, y: -1.69, z: 0}
+  m_LocalPosition: {x: -2.22, y: -1.69, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -347,7 +349,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2135336054}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.77, y: 2.95, z: 0}
+  m_LocalPosition: {x: -5.06, y: 0.03, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

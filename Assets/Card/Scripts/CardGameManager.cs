@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class CardGameManager : MonoBehaviour
 {
@@ -30,7 +31,13 @@ public class CardGameManager : MonoBehaviour
     public bool isOpponent; //identify whether the card is in opponent's deck or in player's deck
     public bool isPlayer;
 
+    public GameObject nextCard;
+
     public Card cardRef;
+    public Vector3 newPos;
+ 
+    Vector3 currentPlayerPos;
+    Vector3 currentOppoPos;
 
     void Start()
     {
@@ -70,6 +77,8 @@ public class CardGameManager : MonoBehaviour
 
             case GameState.OPPONENT_TURN:
 
+                OpponentTurn();
+
                 break;
 
             case GameState.PLAYER_TURN:
@@ -90,23 +99,79 @@ public class CardGameManager : MonoBehaviour
         }
     }
 
+
     void OppoDealCard()
     {
-        GameObject nextCard = DeckManager.deck[DeckManager.deck.Count - 1];//a temporary storage of the next card dealt
-        Vector3 newPos = opponentPos.transform.position;
+        nextCard = DeckManager.deck[DeckManager.deck.Count - 1]; //a temporary storage of the next card dealt
+        //opponentHand.Add(nextCard);
+        newPos = opponentPos.transform.position; //refer to the pre-determined opponent position
         newPos.x = newPos.x + (2f * opponentHand.Count); //spacing between each card
-        nextCard.transform.position = newPos;
+
+        
+        while(nextCard.transform.position != newPos)
+        {
+            currentOppoPos = Vector3.MoveTowards(nextCard.transform.position, newPos, 0.10f);
+            nextCard.transform.position = currentOppoPos;   
+        }
+        
+
         opponentHand.Add(nextCard);
+
         DeckManager.deck.Remove(nextCard);
     }
 
     void PlayerDealCard()
     {
-        GameObject nextCard = DeckManager.deck[DeckManager.deck.Count - 1];//a temporary storage of the next card dealt
-        Vector3 newPos = playerPos.transform.position;
+        nextCard = DeckManager.deck[DeckManager.deck.Count - 1];//a temporary storage of the next card dealt
+        newPos = playerPos.transform.position;
         newPos.x = newPos.x + (2f * playerHand.Count); //spacing between each card
-        nextCard.transform.position = newPos;
+
+        
+        while(nextCard.transform.position != newPos)
+        {
+            currentPlayerPos = Vector3.MoveTowards(nextCard.transform.position, newPos, 0.10f);
+            nextCard.transform.position = currentPlayerPos;
+        }
+        
+
         playerHand.Add(nextCard);
+
         DeckManager.deck.Remove(nextCard);
     }
+
+    void OpponentTurn()
+    {
+       
+    }
+
+    void PlayerTurn()
+    {
+
+    }
+
+    void Evaluation()
+    {
+
+    }
+
+    void Discard()
+    {
+
+    }
+
+    void Reshuffle()
+    {
+
+    }
+
+    /*
+    void FixedUpdate()
+    {
+        GameObject nextCard2 = nextCard;
+        Vector3 newPos2 = newPos;
+        Vector3 currentPos;
+        currentPos = Vector3.Lerp(nextCard2.transform.position, newPos2, 0.2f);
+        nextCard2.transform.position = currentPos;
+    }
+    */
 }
