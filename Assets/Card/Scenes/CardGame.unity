@@ -374,13 +374,10 @@ MonoBehaviour:
   oppoPlayedPos: {fileID: 2099272141}
   playerPlayedPos: {fileID: 282524163}
   discardPos: {fileID: 282907539}
-  isOpponent: 0
-  isPlayer: 0
-  nextCard: {fileID: 0}
-  oppoPlayed: {fileID: 0}
-  playerPlayed: {fileID: 0}
   cardRef: {fileID: 78833591623606842, guid: 3d9d00b4d74abde4f98cc6f345914cce, type: 3}
   newPos: {x: 0, y: 0, z: 0}
+  defaultPos: {x: 0, y: 0, z: 0}
+  previousPos: []
 --- !u!4 &975409548
 Transform:
   m_ObjectHideFlags: 0
@@ -395,6 +392,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1419030057
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1419030058}
+  m_Layer: 0
+  m_Name: Score Calculation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1419030058
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1419030057}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.6127734, y: 1.2216169, z: 0.033942748}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1647524970
 GameObject:
@@ -420,7 +448,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1647524970}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.1600003, y: -6.99, z: 0}
+  m_LocalPosition: {x: 3.1600003, y: -7.71, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

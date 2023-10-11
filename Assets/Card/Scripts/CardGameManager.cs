@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using static UnityEngine.GraphicsBuffer;
 
 public class CardGameManager : MonoBehaviour
@@ -19,8 +21,8 @@ public class CardGameManager : MonoBehaviour
 
     public static GameState state;
 
-    public List<GameObject> playerHand = new List<GameObject>();//base class for all entities
-    public List<GameObject> opponentHand = new List<GameObject>();
+    public List <GameObject> playerHand = new List <GameObject>();//base class for all entities
+    public List <GameObject> opponentHand = new List <GameObject>();
 
     public int playerHandCount; //keep track of how many cards the Player should have
     public Transform playerPos; //set the location of the cards
@@ -32,18 +34,17 @@ public class CardGameManager : MonoBehaviour
     public Transform playerPlayedPos;
     public Transform discardPos;
 
-    public bool isOpponent; //identify whether the card is in Opponent's deck or in Player's deck
-    public bool isPlayer;
-
-    public GameObject nextCard; //the next card dealt from deck
-    public GameObject oppoPlayed; //the card that Opponent plays
-    public GameObject playerPlayed; //the card that Player plays
+    GameObject nextCard; //the next card dealt from deck
+    GameObject oppoPlayed; //the card that Opponent plays
+    GameObject playerPlayed; //the card that Player plays
 
     public Card cardRef;
-    public Vector3 newPos = new Vector3(0,0,0); //initializing newPos
+    public Vector3 newPos; //initializing newPos
  
     Vector3 currentPlayerPos;
     Vector3 currentOppoPos;
+
+    public Vector3 defaultPos; //stores original y position of a Player card
 
     SpriteRenderer inGameRenderer;
 
@@ -51,6 +52,10 @@ public class CardGameManager : MonoBehaviour
     int oppoIndex = 0; //the index of the card played by the Opponent in the Oppoent's deck
 
     bool randomPicked = false; //ensure Random selection only runs once
+    bool mouseClickedCard = false; //check if mouse clicks on a Player card in Player_Turn
+
+    public List <Vector3> previousPos = new List <Vector3>(); //stpres previous positions of Player hand
+    //so that they can return after mouse hovering
 
 
     void Start()
@@ -66,7 +71,7 @@ public class CardGameManager : MonoBehaviour
         {
             case GameState.OPPO_DEAL:
 
-                if(opponentHand.Count < opponentHandCount)
+                if(opponentHand.Count < opponentHandCount) //if Opponent hand less than predetermined amount
                 {
                     OppoDealCard();
                     
@@ -74,42 +79,54 @@ public class CardGameManager : MonoBehaviour
                 else
                 {
                     
-                    state = GameState.PLAYER_DEAL;
+                    state = GameState.PLAYER_DEAL; //Opponent hand reaches predetermined amount
                 }
 
                 break;
 
             case GameState.PLAYER_DEAL:
 
-                if (playerHand.Count < playerHandCount)
+                if (playerHand.Count < playerHandCount) //if Player hand less than predetermined amount
                 {
                     PlayerDealCard();
                 }
                 else
                 {
-                    state = GameState.OPPONENT_TURN;
+                    state = GameState.OPPONENT_TURN; //Player hand reaches predetermined amount
                 }
 
                 break;
 
             case GameState.OPPONENT_TURN:
 
-                if (opponentHand.Count == opponentHandCount)
+                if (opponentHand.Count == opponentHandCount) //Opponent has not played a card
                 {
                     OpponentTurn();
                 }
                 else
                 {
-                    state = GameState.PLAYER_TURN;
+                    counter = 0; //initializing counter
+                    state = GameState.PLAYER_TURN; //Opponent has played a card
                 }
             
                 break;
 
             case GameState.PLAYER_TURN:
 
+                if (playerHand.Count == playerHandCount) //Player has not played a card
+                {
+                    PlayerTurn();
+                }
+                else
+                {
+                    state = GameState.EVALUATION; //Player has played a card
+                }
+
                 break;
 
             case GameState.EVALUATION:
+
+                Debug.Log("Hi");
 
                 break;
 
@@ -175,20 +192,20 @@ public class CardGameManager : MonoBehaviour
 
                 Card nextCardScript = nextCard.GetComponent<Card>();
 
-                inGameRenderer.sprite = nextCardScript.faceSprite; //reveal player card faces
+                inGameRenderer.sprite = nextCardScript.faceSprite; //reveal Player card faces
 
                 counter++;
             }
         }
         else
         {
-            if (!randomPicked) //if a random opponent card has not been picked 
+            if (!randomPicked) //if a random Opponent card has not been picked 
             {
-                oppoIndex = Random.Range(0, 3); //randomly play 1 of 3 opponent card from opponent deck
+                oppoIndex = Random.Range(0, 3); //randomly play 1 of 3 Opponent card from opponent deck
 
-                oppoPlayed = opponentHand[oppoIndex]; //stores the card that the opponent plays
+                oppoPlayed = opponentHand[oppoIndex]; //stores the card that the Opponent plays
 
-                newPos = oppoPlayedPos.transform.position; //get opponent target position
+                newPos = oppoPlayedPos.transform.position; //get Opponent target position
 
                 randomPicked = true;
             }
@@ -201,7 +218,7 @@ public class CardGameManager : MonoBehaviour
 
                     oppoPlayed.transform.position = oppoCurrentPos;
                 }
-                else
+                else //if finished, remove card from Opponent hand
                 {
                     opponentHand.Remove(oppoPlayed);
                 }
@@ -211,7 +228,67 @@ public class CardGameManager : MonoBehaviour
 
     void PlayerTurn()
     {
-        
+        if (!mouseClickedCard) //if mouse does not click on a Player card
+        {
+            for (int m = 0; m < playerHand.Count; m++)
+            {
+
+                nextCard = playerHand[m]; //loop through Player hand
+
+                Card nextCardScript = nextCard.GetComponent<Card>();
+
+                previousPos.Add(nextCard.transform.position); //stores previous position of each Player card
+
+                Debug.Log(previousPos[m]);
+
+                Debug.Log("hover card pos"+ nextCardScript.hoverCardPos);
+                Debug.Log("clicked card pos"+ nextCardScript.chosenCardPos);
+
+
+                if (nextCardScript.hoverCardPos.Equals(nextCard.transform.position)) //if position of mouse-hover resembles nextCard
+                {
+                    Debug.Log("Hover begins");
+
+                    newPos.y = nextCard.transform.position.y + 2; //card goes to new position when mouse hovers
+
+                    Vector3 hoverCurrentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.04f);
+
+                    nextCard.transform.position = hoverCurrentPos;
+
+                    if (nextCardScript.chosenCardPos.Equals(nextCard.transform.position)) //if position of mouse-clicked-card resembles nextCard
+                    {
+                        Debug.Log("Card selected");
+
+                        playerPlayed = nextCard;
+
+                        newPos = playerPlayedPos.transform.position;
+
+                        mouseClickedCard = true; //if mouse clicks on a Player card
+
+                    }
+                }
+                else //if mouse stops hovering above this card
+                {
+                    Vector3 returnCurrentPos = Vector3.Lerp(nextCard.transform.position, previousPos[m], 0.04f);
+                    nextCard.transform.position = returnCurrentPos;
+                }
+                
+            }
+        }
+        else //moving the card that Player plays to predetermined position
+        {
+            if (playerPlayed.transform.position != newPos)
+            {
+                Vector3 playerCurrentPos = Vector3.Lerp(playerPlayed.transform.position, newPos, 0.04f);
+
+                playerPlayed.transform.position = playerCurrentPos;
+            }
+            else //if finished, remove card from Player hand
+            {
+                playerHand.Remove(playerPlayed);
+                previousPos.Clear(); //empty the list storing previous Player card positions
+            }
+        } 
     }
 
     void Evaluation()
@@ -228,5 +305,5 @@ public class CardGameManager : MonoBehaviour
     {
 
     }
-    
+
 }

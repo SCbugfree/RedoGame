@@ -21,15 +21,16 @@ public class DeckManager : MonoBehaviour
         for (int i = 0; i < deckCount; i++)
         {
             //create an instance of an object, can take serveral parameters (this case create an instance of a card)
+
             GameObject newCard = Instantiate(cardPreFab, gameObject.transform); //gameObject: the object on which the script attaches
             //Instantiate parameters: original, position, rotation, parent, instantiateInWorldSpace
             //Returns: the clone of original object
 
             float num = i * 0.05f;
  
-            newCard.transform.Translate(0,num,0);//distance between each card in pile
+            newCard.transform.Translate(0,num,0); //distance between each card in pile
 
-            Card newCardScript = newCard.GetComponent<Card>();//get card script
+            Card newCardScript = newCard.GetComponent<Card>(); //get card script
 
             newCardScript.faceSprite = cardfaces[Random.Range(0,3)]; //assign pattern of card randomly
 

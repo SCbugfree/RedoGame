@@ -9,8 +9,10 @@ public class Card : MonoBehaviour
 
     SpriteRenderer myRenderer;
 
-    bool mouseOver = false;
-    bool mouseDown = false;
+    public Vector3 chosenCardPos = new Vector3(0,0,0);
+    public Vector3 hoverCardPos = new Vector3(0, 0, 0);
+
+    public Vector3 targetY;
 
     void Start()
     {
@@ -18,28 +20,29 @@ public class Card : MonoBehaviour
         backSprite = myRenderer.sprite;
     }
 
+    
     void Update()
     {
-        if (mouseOver)
-        {
-            
-        }
+                
+    }
+    
 
-        if (mouseDown)
-        {
-            myRenderer.sprite = faceSprite;
-        }
-        
+    void OnMouseOver() //checking procedure: to see if mouse hovers above a card
+    {
+        hoverCardPos = gameObject.transform.position; //store position of the gameObject
     }
 
-    void OnMouseOver()
+    /*
+    public bool IsTouchingMouse(GameObject Card)
     {
-        mouseOver = true;
+        Vector2 point = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        return Card.GetComponent<Collider2D>().OverlapPoint(point);
     }
+    */
 
-    private void OnMouseDown()//checking procedure: to see if cards 
+    void OnMouseDown() //checking procedure: to see if a card is clicked
     {
-        mouseDown = true;
+        chosenCardPos = gameObject.transform.position;
     }
 
 }
