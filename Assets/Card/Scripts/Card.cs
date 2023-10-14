@@ -5,12 +5,15 @@ using UnityEngine;
 public class Card : MonoBehaviour
 {
     public Sprite faceSprite;
-    Sprite backSprite;
+    public Sprite backSprite;
 
     SpriteRenderer myRenderer;
 
     public Vector3 chosenCardPos = new Vector3(0,0,0);
     public Vector3 hoverCardPos = new Vector3(0, 0, 0);
+
+    public bool hover = false;
+    public bool click = false;
 
     public Vector3 targetY;
 
@@ -18,31 +21,25 @@ public class Card : MonoBehaviour
     {
         myRenderer = GetComponent <SpriteRenderer>();
         backSprite = myRenderer.sprite;
+        hover = false;
     }
-
-    
-    void Update()
-    {
-                
-    }
-    
 
     void OnMouseOver() //checking procedure: to see if mouse hovers above a card
     {
         hoverCardPos = gameObject.transform.position; //store position of the gameObject
+        hover = true;
     }
 
-    /*
-    public bool IsTouchingMouse(GameObject Card)
+    void OnMouseExit()
     {
-        Vector2 point = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        return Card.GetComponent<Collider2D>().OverlapPoint(point);
+        hover = false;
     }
-    */
 
     void OnMouseDown() //checking procedure: to see if a card is clicked
     {
         chosenCardPos = gameObject.transform.position;
+        click = true;
+        
     }
 
 }
