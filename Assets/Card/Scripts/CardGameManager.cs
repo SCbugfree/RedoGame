@@ -6,7 +6,6 @@ using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using static UnityEngine.GraphicsBuffer;
-using System.Diagnostics;
 
 public class CardGameManager : MonoBehaviour
 {
@@ -86,7 +85,8 @@ public class CardGameManager : MonoBehaviour
     public int animIndex = 23;
     public int sortOrder = 0;
     public float timer = 1f;
-
+    public float lerpIndex = 0.01f;
+    public float returnSpd = 0.05f;
 
     void Start()
     {
@@ -98,8 +98,6 @@ public class CardGameManager : MonoBehaviour
 
     void Update()
     {
-        UnityEngine.Debug.Log("order " + sortOrder);
-
         switch (state)
         {
             case GameState.OPPO_DEAL:
@@ -234,7 +232,7 @@ public class CardGameManager : MonoBehaviour
 
         if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01f)
         {
-            Vector3 currentPos= Vector3.Lerp(nextCard.transform.position, newPos, 0.03f);
+            Vector3 currentPos= Vector3.Lerp(nextCard.transform.position, newPos, lerpIndex);
             nextCard.transform.position = currentPos;
         }
         else
@@ -255,7 +253,7 @@ public class CardGameManager : MonoBehaviour
 
         if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01f)
         {
-            Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.03f);
+            Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, lerpIndex);
             nextCard.transform.position = currentPos;
         }
         else
@@ -301,7 +299,7 @@ public class CardGameManager : MonoBehaviour
             {
                 if (Vector3.Distance(oppoPlayed.transform.position, newPos) > 0.01f)
                 {
-                    Vector3 oppoCurrentPos = Vector3.Lerp(oppoPlayed.transform.position, newPos, 0.03f);
+                    Vector3 oppoCurrentPos = Vector3.Lerp(oppoPlayed.transform.position, newPos, lerpIndex);
 
                     oppoPlayed.transform.position = oppoCurrentPos;
                 }
@@ -333,7 +331,7 @@ public class CardGameManager : MonoBehaviour
                         if (Vector3.Distance(nextCard.transform.position, previousPos[m]) < 0.01f) //card at original position
                         {
                             newPos.y = previousPos[m].y + 3; //card goes to new position when mouse hovers
-                            hoverCurrentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.03f);
+                            hoverCurrentPos = Vector3.Lerp(nextCard.transform.position, newPos, lerpIndex);
                             nextCard.transform.position = hoverCurrentPos;
                         }
 
@@ -360,7 +358,7 @@ public class CardGameManager : MonoBehaviour
                 {
                     if (Vector3.Distance(nextCard.transform.position, previousPos[m]) > 0.01f)
                     {
-                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, previousPos[m], 0.03f);
+                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, previousPos[m], lerpIndex);
                         nextCard.transform.position = currentPos;
                     }
                 }
@@ -371,7 +369,7 @@ public class CardGameManager : MonoBehaviour
         {
             if (Vector3.Distance(playerPlayed.transform.position, newPos) > 0.01f) //not at position
             {
-                Vector3 currentPos = Vector3.Lerp(playerPlayed.transform.position, newPos, 0.03f);
+                Vector3 currentPos = Vector3.Lerp(playerPlayed.transform.position, newPos, lerpIndex);
 
                 playerPlayed.transform.position = currentPos;
 
@@ -470,7 +468,7 @@ public class CardGameManager : MonoBehaviour
             {
                 if (Vector3.Distance(oppoPlayed.transform.position, newPos) > 0.01f)
                 {
-                    Vector3 currentPos = Vector3.Lerp(oppoPlayed.transform.position, newPos, 0.03f);
+                    Vector3 currentPos = Vector3.Lerp(oppoPlayed.transform.position, newPos, lerpIndex);
                     oppoPlayed.transform.position = currentPos;
                 }
                 else
@@ -485,7 +483,7 @@ public class CardGameManager : MonoBehaviour
             {
                 if (Vector3.Distance(playerPlayed.transform.position, newPos) > 0.01f)
                 {
-                    Vector3 currentPos = Vector3.Lerp(playerPlayed.transform.position, newPos, 0.03f);
+                    Vector3 currentPos = Vector3.Lerp(playerPlayed.transform.position, newPos, lerpIndex);
                     playerPlayed.transform.position = currentPos;
                 }
                 else
@@ -514,7 +512,7 @@ public class CardGameManager : MonoBehaviour
 
                     if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01f)
                     {
-                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.03f);
+                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, lerpIndex);
 
                         nextCard.transform.position = currentPos;
                     }
@@ -535,7 +533,7 @@ public class CardGameManager : MonoBehaviour
 
                     if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01f)
                     {
-                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.03f);
+                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, lerpIndex);
 
                         nextCard.transform.position = currentPos;
                     }
@@ -576,7 +574,7 @@ public class CardGameManager : MonoBehaviour
 
                     if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01f)
                     {
-                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.1f);
+                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, returnSpd);
                         nextCard.transform.position = currentPos;
                     }
                     else
@@ -597,7 +595,7 @@ public class CardGameManager : MonoBehaviour
 
                     if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01f)
                     {
-                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.1f);
+                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, returnSpd);
                         nextCard.transform.position = currentPos;
                     }
                     else
