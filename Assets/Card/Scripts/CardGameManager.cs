@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using static UnityEngine.GraphicsBuffer;
+using System.Diagnostics;
 
 public class CardGameManager : MonoBehaviour
 {
@@ -53,15 +54,12 @@ public class CardGameManager : MonoBehaviour
     public Card cardRef;
     public Vector3 newPos; //initializing newPos
 
-    Vector3 currentPlayerPos;
-    Vector3 currentOppoPos;
-
     public Vector3 hoverCurrentPos;
 
     public Vector3 defaultPos; //stores original y position of a Player card
 
-    public GameObject dmPos;
-    public DeckManager deckPos;
+    //public GameObject dmPos;
+    //public DeckManager deckPos;
 
     SpriteRenderer inGameRenderer;
 
@@ -71,7 +69,6 @@ public class CardGameManager : MonoBehaviour
     bool randomPicked = false; //ensure Random selection only runs once
     bool mouseClickedCard = false; //check if mouse clicks on a Player card in Player_Turn
     bool evaluated = false;
-    //bool discardPlayed = false; //check if all cards have been discarded
     int reshuffled = 0;
     bool oppoDiscard = false;
     bool playerDiscard = false;
@@ -87,22 +84,21 @@ public class CardGameManager : MonoBehaviour
     public int randomnizedDeck = 0;
     public int shuffleIndex = 0;
     public int animIndex = 23;
+    public int sortOrder = 0;
+    public float timer = 1f;
 
 
     void Start()
     {
         state = GameState.OPPO_DEAL;
         inGameRenderer = GetComponent<SpriteRenderer>();
-        GameObject dmPos = GetComponent<GameObject>();
-        GameObject deckPos = GetComponent<GameObject>();
         cardSndSource = GetComponent<AudioSource>();
 
     }
 
     void Update()
     {
-        //Debug.Log("reshuffled=" + reshuffled);
-        //Debug.Log("DeckManager is at" + GameObject.Find("Deck Manager").transform.position);
+        UnityEngine.Debug.Log("order " + sortOrder);
 
         switch (state)
         {
@@ -111,11 +107,9 @@ public class CardGameManager : MonoBehaviour
                 if (opponentHand.Count < opponentHandCount) //if Opponent hand less than predetermined amount
                 {
                     OppoDealCard();
-
                 }
                 else
                 {
-
                     state = GameState.PLAYER_DEAL; //Opponent hand reaches predetermined amount
                 }
 
@@ -143,6 +137,7 @@ public class CardGameManager : MonoBehaviour
                 else
                 {
                     counter = 0; //initializing counter
+
                     state = GameState.PLAYER_TURN; //Opponent has played a card
                 }
 
@@ -171,13 +166,21 @@ public class CardGameManager : MonoBehaviour
                 {
                     state = GameState.DISCARD;
                 }
+
                 break;
 
             case GameState.DISCARD:
 
                 if ((playerHand.Count > 0) || (opponentHand.Count > 0)) //if player hand or opponent hand still has card
                 {
-                    Discard();
+                    if (timer > 0)
+                    {
+                        timer -= Time.deltaTime;
+                    }
+                    else
+                    {
+                        Discard();
+                    }
                 }
                 else //if all cards have been discarded
                 {
@@ -190,6 +193,7 @@ public class CardGameManager : MonoBehaviour
                         state = GameState.OPPO_DEAL;
                     }
                 }
+
                 break;
 
             case GameState.RESHUFFLE:
@@ -202,6 +206,7 @@ public class CardGameManager : MonoBehaviour
                 {
                     state = GameState.OPPO_DEAL;
                 }
+
                 break;
         }
     }
@@ -209,6 +214,7 @@ public class CardGameManager : MonoBehaviour
 
     void OppoDealCard()
     {
+         //initialization
         evaluated = false;
         mouseClickedCard = false;
         reshuffled = 0;
@@ -218,6 +224,7 @@ public class CardGameManager : MonoBehaviour
         randomnizedDeck = 0;
         shuffleIndex = 0;
         animIndex = 23;
+        timer = 1f;
 
 
         nextCard = DeckManager.deck[DeckManager.deck.Count - 1]; //a temporary storage of the next card dealt
@@ -225,10 +232,10 @@ public class CardGameManager : MonoBehaviour
         newPos.x = newPos.x + (2f * opponentHand.Count); //spacing between each card
 
 
-        if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01)
+        if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01f)
         {
-            currentOppoPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.04f);
-            nextCard.transform.position = currentOppoPos;
+            Vector3 currentPos= Vector3.Lerp(nextCard.transform.position, newPos, 0.03f);
+            nextCard.transform.position = currentPos;
         }
         else
         {
@@ -238,6 +245,7 @@ public class CardGameManager : MonoBehaviour
         }
     }
 
+
     void PlayerDealCard()
     {
         nextCard = DeckManager.deck[DeckManager.deck.Count - 1];//a temporary storage of the next card dealt
@@ -245,10 +253,10 @@ public class CardGameManager : MonoBehaviour
         newPos.x = newPos.x + (2f * playerHand.Count); //spacing between each card
 
 
-        if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01)
+        if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01f)
         {
-            currentPlayerPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.04f);
-            nextCard.transform.position = currentPlayerPos;
+            Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.03f);
+            nextCard.transform.position = currentPos;
         }
         else
         {
@@ -258,10 +266,9 @@ public class CardGameManager : MonoBehaviour
         }
     }
 
+
     void OpponentTurn()
     {
-        Debug.Log("oppo dealing starts");
-
         if (counter < playerHandCount) //make sure not repeatingly revealing 3 cards of Player deck
         {
             for (int k = 0; k < playerHandCount; k++) //ensure every card in Player deck has been revealed
@@ -292,9 +299,9 @@ public class CardGameManager : MonoBehaviour
 
             else
             {
-                if (Vector3.Distance(oppoPlayed.transform.position, newPos) > 0.01)
+                if (Vector3.Distance(oppoPlayed.transform.position, newPos) > 0.01f)
                 {
-                    Vector3 oppoCurrentPos = Vector3.Lerp(oppoPlayed.transform.position, newPos, 0.05f);
+                    Vector3 oppoCurrentPos = Vector3.Lerp(oppoPlayed.transform.position, newPos, 0.03f);
 
                     oppoPlayed.transform.position = oppoCurrentPos;
                 }
@@ -305,6 +312,7 @@ public class CardGameManager : MonoBehaviour
             }
         }
     }
+
 
     void PlayerTurn()
     {
@@ -320,12 +328,12 @@ public class CardGameManager : MonoBehaviour
 
                 if (nextCardScript.hover) //if mouse hovers above any card
                 {
-                    if (Vector3.Distance(nextCardScript.hoverCardPos, nextCard.transform.position) < 0.01) //if position of mouse-hover resembles nextCard
+                    if (Vector3.Distance(nextCardScript.hoverCardPos, nextCard.transform.position) < 0.01f) //if position of mouse-hover resembles nextCard
                     {
-                        if (Vector3.Distance(nextCard.transform.position, previousPos[m]) < 0.01) //card at original position
+                        if (Vector3.Distance(nextCard.transform.position, previousPos[m]) < 0.01f) //card at original position
                         {
                             newPos.y = previousPos[m].y + 3; //card goes to new position when mouse hovers
-                            hoverCurrentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.05f);
+                            hoverCurrentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.03f);
                             nextCard.transform.position = hoverCurrentPos;
                         }
 
@@ -333,11 +341,13 @@ public class CardGameManager : MonoBehaviour
                         {
                             if (nextCardScript.click) //if mouse is clicked when hovering above nextCard
                             {
-                                if (Vector3.Distance(nextCardScript.chosenCardPos, nextCard.transform.position) < 0.01)
+                                if (Vector3.Distance(nextCardScript.chosenCardPos, nextCard.transform.position) < 0.01f)
                                 {
                                     playerPlayed = nextCard;
 
                                     newPos = playerPlayedPos.transform.position;
+
+                                    cardSndSource.PlayOneShot(dealSnd);
 
                                     mouseClickedCard = true;
                                 }
@@ -348,23 +358,22 @@ public class CardGameManager : MonoBehaviour
                 }
                 else //mouse no longer hovers on a card
                 {
-                    if (Vector3.Distance(nextCard.transform.position, previousPos[m]) > 0.01)
+                    if (Vector3.Distance(nextCard.transform.position, previousPos[m]) > 0.01f)
                     {
-                        Vector3 returnCurrentPos = Vector3.Lerp(nextCard.transform.position, previousPos[m], 0.05f);
-                        nextCard.transform.position = returnCurrentPos;
+                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, previousPos[m], 0.03f);
+                        nextCard.transform.position = currentPos;
                     }
                 }
-
             }
         }
 
         else //moving the card that Player plays to predetermined position
         {
-            if (Vector3.Distance(playerPlayed.transform.position, newPos) > 0.01) //not at position
+            if (Vector3.Distance(playerPlayed.transform.position, newPos) > 0.01f) //not at position
             {
-                Vector3 playerCurrentPos = Vector3.Lerp(playerPlayed.transform.position, newPos, 0.05f);
+                Vector3 currentPos = Vector3.Lerp(playerPlayed.transform.position, newPos, 0.03f);
 
-                playerPlayed.transform.position = playerCurrentPos;
+                playerPlayed.transform.position = currentPos;
 
             }
             else //if finished, remove card from Player hand
@@ -375,13 +384,13 @@ public class CardGameManager : MonoBehaviour
         }
     }
 
+
     void Evaluation()
     {
-        //Reveal Opponent face sprite
         SpriteRenderer inGameRenderer = oppoPlayed.GetComponent<SpriteRenderer>();
         Card oppoCardScript = oppoPlayed.GetComponent<Card>();
         inGameRenderer.sprite = oppoCardScript.faceSprite;
-        oppoSpr = oppoCardScript.faceSprite;
+        oppoSpr = oppoCardScript.faceSprite; //reveal Opponent face sprite
 
         Card playerCardScript = playerPlayed.GetComponent<Card>();
         playerSpr = playerCardScript.faceSprite;
@@ -391,12 +400,14 @@ public class CardGameManager : MonoBehaviour
         {
             if (playerSpr.name == "rock")
             {
-                playerScore.text = (playerS + 1).ToString();
+                playerS += 1;
+                playerScore.text = playerS.ToString();
                 cardSndSource.PlayOneShot(winSnd);
             }
             else if (playerSpr.name == "paper")
             {
-                oppoScore.text = (oppoS + 1).ToString();
+                oppoS += 1;
+                oppoScore.text = oppoS.ToString();
                 cardSndSource.PlayOneShot(loseSnd);
             }
             else
@@ -408,13 +419,15 @@ public class CardGameManager : MonoBehaviour
         {
             if (playerSpr.name == "scissors")
             {
-                oppoScore.text = (oppoS + 1).ToString();
+                oppoS += 1;
+                oppoScore.text = oppoS.ToString();
                 cardSndSource.PlayOneShot(loseSnd);
             }
             else if (playerSpr.name == "paper")
             {
-                playerScore.text = (playerS + 1).ToString();
-                cardSndSource.PlayOneShot(loseSnd);
+                playerS += 1;
+                playerScore.text = playerS.ToString();
+                cardSndSource.PlayOneShot(winSnd);
             }
             else
             {
@@ -425,12 +438,14 @@ public class CardGameManager : MonoBehaviour
         {
             if (playerSpr.name == "scissors")
             {
-                playerScore.text = (playerS + 1).ToString();
-                cardSndSource.PlayOneShot(loseSnd);
+                playerS += 1;
+                playerScore.text = playerS.ToString();
+                cardSndSource.PlayOneShot(winSnd);
             }
             else if (playerSpr.name == "rock")
             {
-                oppoScore.text = (oppoS + 1).ToString();
+                oppoS += 1;
+                oppoScore.text = oppoS.ToString();
                 cardSndSource.PlayOneShot(loseSnd);
             }
             else
@@ -442,34 +457,36 @@ public class CardGameManager : MonoBehaviour
 
     }
 
+
     void Discard()
     {
         newPos = discardPos.transform.position;
+        newPos.y = discardPos.transform.position.y + discardPile.Count * 0.05f;
+        //SpriteRenderer inGameRenderer = nextCard.GetComponent<SpriteRenderer>();
 
         if (!(oppoDiscard && playerDiscard))
         {
-            if (!oppoDiscard)
+            if (!oppoDiscard) //discard the card Opponent plays
             {
-                if (Vector3.Distance(oppoPlayed.transform.position, newPos) > 0.01)
+                if (Vector3.Distance(oppoPlayed.transform.position, newPos) > 0.01f)
                 {
-                    Vector3 oppoCurrentPos = Vector3.Lerp(oppoPlayed.transform.position, newPos, 0.05f);
-                    oppoPlayed.transform.position = oppoCurrentPos;
+                    Vector3 currentPos = Vector3.Lerp(oppoPlayed.transform.position, newPos, 0.03f);
+                    oppoPlayed.transform.position = currentPos;
                 }
                 else
                 {
                     cardSndSource.PlayOneShot(dealSnd);
                     discardPile.Add(oppoPlayed);
                     oppoDiscard = true;
+                    sortOrder += 1;
                 }
             }
-            else
+            else //discard the card Player plays
             {
-                newPos.z = oppoPlayed.transform.position.z - 1;
-
-                if (Vector3.Distance(playerPlayed.transform.position, newPos) > 0.01)
+                if (Vector3.Distance(playerPlayed.transform.position, newPos) > 0.01f)
                 {
-                    Vector3 playerCurrentPos = Vector3.Lerp(playerPlayed.transform.position, newPos, 0.04f);
-                    playerPlayed.transform.position = playerCurrentPos;
+                    Vector3 currentPos = Vector3.Lerp(playerPlayed.transform.position, newPos, 0.03f);
+                    playerPlayed.transform.position = currentPos;
                 }
                 else
                 {
@@ -485,9 +502,9 @@ public class CardGameManager : MonoBehaviour
 
             if ((opponentHand.Count > 0) && (playerHand.Count != 0))
             {
-                SpriteRenderer inGameRenderer = nextCard.GetComponent<SpriteRenderer>();
-
                 Card nextCardScript = nextCard.GetComponent<Card>();
+
+                SpriteRenderer inGameRenderer = nextCard.GetComponent<SpriteRenderer>();
 
                 inGameRenderer.sprite = nextCardScript.faceSprite; //reveal Opponent Hand face sprites
 
@@ -495,11 +512,9 @@ public class CardGameManager : MonoBehaviour
                 {
                     nextCard = opponentHand[i];
 
-                    newPos.z = discardPos.transform.position.z - (2 + i);
-
-                    if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01)
+                    if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01f)
                     {
-                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.05f);
+                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.03f);
 
                         nextCard.transform.position = currentPos;
                     }
@@ -508,7 +523,6 @@ public class CardGameManager : MonoBehaviour
                         cardSndSource.PlayOneShot(dealSnd);
                         discardPile.Add(nextCard);
                         opponentHand.Remove(nextCard);
-                        i++;
                     }
                 }
             }
@@ -519,11 +533,9 @@ public class CardGameManager : MonoBehaviour
                 {
                     nextCard = playerHand[i];
 
-                    newPos.z = discardPos.transform.position.z - (4 + i);
-
-                    if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01)
+                    if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01f)
                     {
-                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.05f);
+                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.03f);
 
                         nextCard.transform.position = currentPos;
                     }
@@ -532,21 +544,21 @@ public class CardGameManager : MonoBehaviour
                         cardSndSource.PlayOneShot(dealSnd);
                         discardPile.Add(nextCard);
                         playerHand.Remove(nextCard);
-                        i++;
                     }
                 }
             }
         }
     }
 
+
     void Reshuffle()
     {
+        sortOrder = 0;
+        SpriteRenderer inGameRenderer = nextCard.GetComponent<SpriteRenderer>();
+        Card nextCardScript = nextCard.GetComponent<Card>();
+
         for (int t = 0; t < discardPile.Count; t++) //flip all cards (face sprite to back sprite)
         {
-            SpriteRenderer inGameRenderer = nextCard.GetComponent<SpriteRenderer>();
-
-            Card nextCardScript = nextCard.GetComponent<Card>();
-
             inGameRenderer.sprite = nextCardScript.backSprite; //turns to back sprite
         }
 
@@ -562,9 +574,7 @@ public class CardGameManager : MonoBehaviour
 
                     newPos.y += shuffleIndex * 0.05f;
 
-                    newPos.z -= shuffleIndex;
-
-                    if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01f) //if not at original position
+                    if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01f)
                     {
                         Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.1f);
                         nextCard.transform.position = currentPos;
@@ -572,39 +582,31 @@ public class CardGameManager : MonoBehaviour
                     else
                     {
                         DeckManager.deck.Add(nextCard);
+                        cardSndSource.PlayOneShot(dealSnd);
                         shuffleIndex++;
                     }
                 }
             }
             else //all cards returned to the starting deck
             {
-                Debug.Log("animIndex is now " + animIndex);
-
                 if (animIndex >= 0) //play shuffling animation
                 {
-                    Debug.Log("run");
-                    nextCard = DeckManager.deck[DeckManager.deck.Count - 1 - animIndex];
+                    nextCard = DeckManager.deck[animIndex]; //get the card at the top
 
-                    newPos.y = DeckManager.deck[0].transform.position.y - animIndex * 0.05f;
-
-                    Debug.Log("newPos.y = "+newPos.y);
-            
-                    newPos.z = DeckManager.deck[0].transform.position.z + animIndex;
+                    newPos.y = GameObject.Find("Deck Manager").transform.position.y + (DeckManager.deck.Count - animIndex) * 0.05f; //transfer it to bottom
 
                     if (Vector3.Distance(nextCard.transform.position, newPos) > 0.01f)
                     {
-                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.05f);
+                        Vector3 currentPos = Vector3.Lerp(nextCard.transform.position, newPos, 0.1f);
                         nextCard.transform.position = currentPos;
-                        Debug.Log("still run");
                     }
                     else
                     {
                         animIndex--;
-
-                        //Debug.Log("i is now " + i);
+                        cardSndSource.PlayOneShot(dealSnd);
                     }
                 }
-                else
+                else //physically reshuffling the deck
                 {
                     discardPile.Clear();
 
@@ -621,8 +623,7 @@ public class CardGameManager : MonoBehaviour
                         DeckManager.deck[j] = nextCard;
 
                         reshuffled++;
-
-                    }
+                    } 
                 }
                 
             }

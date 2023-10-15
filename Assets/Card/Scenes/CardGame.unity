@@ -214,7 +214,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 282907538}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.23, y: -2.92, z: 0}
+  m_LocalPosition: {x: 9.23, y: -3.34, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -329,7 +329,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -100}
   m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -387,8 +387,6 @@ MonoBehaviour:
   newPos: {x: 0, y: 0, z: 0}
   hoverCurrentPos: {x: 0, y: 0, z: 0}
   defaultPos: {x: 0, y: 0, z: 0}
-  dmPos: {fileID: 0}
-  deckPos: {fileID: 0}
   previousPos: []
   oppoScore: {fileID: 1594286149}
   playerScore: {fileID: 1965393047}
@@ -398,6 +396,8 @@ MonoBehaviour:
   randomnizedDeck: 0
   shuffleIndex: 0
   animIndex: 23
+  sortOrder: 0
+  timer: 10
 --- !u!4 &975409548
 Transform:
   m_ObjectHideFlags: 0
